@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/usuarios/**
+        - id: lobby-service
+          uri: ${LOBBY_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/salas/**
+        - id: game-service
+          uri: ${GAME_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/partidas/**
+
+jwt:
+  secret: ${JWT_SECRET:change-this-to-a-long-random-secret-shared-by-gateway-and-user-service}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  config: classpath:logback-spring.xml
