@@ -38,8 +38,11 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> PUBLIC_PATHS = List.of(
             "/api/usuarios/registro",
             "/api/usuarios/login",
+            "/api/usuarios/guest",
             "/actuator"
     );
+
+    public static final String USERNAME_HEADER = "X-Username";
 
     private final JwtProperties jwtProperties;
 
@@ -64,11 +67,16 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
             Jws<Claims> jws = Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-            String userId = jws.getPayload().getSubject();
+            Claims claims = jws.getPayload();
+            String userId = claims.getSubject();
+            String username = claims.get("username", String.class);
 
-            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                    .header(USER_ID_HEADER, userId)
-                    .build();
+            ServerHttpRequest.Builder requestBuilder = exchange.getRequest().mutate()
+                    .header(USER_ID_HEADER, userId);
+            if (username != null) {
+                requestBuilder.header(USERNAME_HEADER, username);
+            }
+            ServerHttpRequest mutatedRequest = requestBuilder.build();
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
         } catch (JwtException | IllegalArgumentException ex) {
