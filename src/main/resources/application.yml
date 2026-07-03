@@ -6,6 +6,12 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
       routes:
         - id: user-service
           uri: ${USER_SERVICE_URL:http://localhost:8081}
