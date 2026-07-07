@@ -9,9 +9,20 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOriginPatterns: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            # Nunca "*": solo los origenes explicitos del frontend (dev y prod via env).
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+            allowedMethods:
+              - GET
+              - POST
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+      default-filters:
+        # Cabeceras de seguridad basicas en toda respuesta que atraviesa el gateway.
+        - SetResponseHeader=X-Content-Type-Options, nosniff
+        - SetResponseHeader=X-Frame-Options, DENY
+        - SetResponseHeader=Referrer-Policy, no-referrer
       routes:
         - id: user-service
           uri: ${USER_SERVICE_URL:http://localhost:8081}
