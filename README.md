@@ -3,6 +3,7 @@
 > Puerta de entrada única del sistema: enrutamiento, validación de JWT y trazabilidad —
 > lo primero que toca cada request REST de **UNO Power-Ups Arena**.
 
+[![CI](https://github.com/UNO-POWER/APIGATEWAY/actions/workflows/ci.yml/badge.svg)](https://github.com/UNO-POWER/APIGATEWAY/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-21-orange)]()
 [![Spring Cloud Gateway](https://img.shields.io/badge/Spring%20Cloud%20Gateway-2023.0.1-brightgreen)]()
 [![Tests](https://img.shields.io/badge/tests-4%20passing-success)]()
@@ -267,7 +268,7 @@ X-Auth-Rejected-Reason: falta encabezado Authorization Bearer
   Gateway; por eso, en despliegue, esos servicios **no deben** exponer su puerto directamente a
   Internet (ver `deploy/docker-compose.prod.yml`, sin `ports:` publicados para ellos).
 - **CORS explícito**, nunca `*` — solo el/los orígenes configurados en `CORS_ALLOWED_ORIGINS`
-  pueden hacer requests cross-origin, y solo con métodos `GET`/`POST`/`OPTIONS` y headers
+  pueden hacer requests cross-origin, y solo con métodos `GET`/`POST`/`PATCH`/`OPTIONS` y headers
   `Authorization`/`Content-Type`.
 - **Cabeceras de seguridad en toda respuesta** (`default-filters`): `X-Content-Type-Options: nosniff`,
   `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`.
