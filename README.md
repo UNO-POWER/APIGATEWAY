@@ -7,7 +7,6 @@
 [![Java](https://img.shields.io/badge/Java-21-orange)]()
 [![Spring Cloud Gateway](https://img.shields.io/badge/Spring%20Cloud%20Gateway-2023.0.1-brightgreen)]()
 [![Tests](https://img.shields.io/badge/tests-4%20passing-success)]()
-[![License](https://img.shields.io/badge/license-MIT-blue)]()
 
 ---
 
@@ -31,8 +30,7 @@
 16. [Solución de problemas](#16-solución-de-problemas)
 17. [Roadmap](#17-roadmap)
 18. [Contribución](#18-contribución)
-19. [Licencia](#19-licencia)
-20. [Autor](#20-autor)
+19. [Autor](#19-autor)
 
 ---
 
@@ -44,7 +42,7 @@ servicios de negocio no dupliquen esa lógica), y añade un `X-Trace-Id` para po
 logs entre servicios de una misma petición.
 
 **No** enruta el WebSocket de partida — ese tráfico va directo a
-[Game Service](../GameService) por razones de latencia (ver EC-01, documentado en detalle en el
+[Game Service](https://github.com/UNO-POWER/GameService) por razones de latencia (ver EC-01, documentado en detalle en el
 propio README de Game Service).
 
 ### Responsabilidades exactas
@@ -234,9 +232,9 @@ endpoint (método, body, respuesta, errores) vive en el README de cada servicio 
 
 | Predicado | Destino (env var) | Documentado en |
 |---|---|---|
-| `Path=/api/usuarios/**` | `USER_SERVICE_URL` | [`UserService/README.md`](../UserService/README.md#10-api) |
-| `Path=/api/salas/**` | `LOBBY_SERVICE_URL` | [`LobbyService/README.md`](../LobbyService/README.md#10-api) |
-| `Path=/api/partidas/**` | `GAME_SERVICE_URL` | [`GameService/README.md`](../GameService/README.md#10-api-rest-interna) — nota: la API de juego real es por WebSocket, no REST; este predicado existe por si se agregan endpoints REST auxiliares a futuro |
+| `Path=/api/usuarios/**` | `USER_SERVICE_URL` | [UserService](https://github.com/UNO-POWER/UserService) |
+| `Path=/api/salas/**` | `LOBBY_SERVICE_URL` | [LobbyService](https://github.com/UNO-POWER/LobbyService) |
+| `Path=/api/partidas/**` | `GAME_SERVICE_URL` | [GameService](https://github.com/UNO-POWER/GameService) — nota: la API de juego real es por WebSocket, no REST; este predicado existe por si se agregan endpoints REST auxiliares a futuro |
 
 ### Rutas públicas (sin JWT)
 
@@ -266,7 +264,7 @@ X-Auth-Rejected-Reason: falta encabezado Authorization Bearer
 - **Único punto de validación de JWT para tráfico REST** — los servicios de negocio (User, Lobby)
   confían ciegamente en `X-User-Id`/`X-Username` porque asumen que llegaron a través de este
   Gateway; por eso, en despliegue, esos servicios **no deben** exponer su puerto directamente a
-  Internet (ver `deploy/docker-compose.prod.yml`, sin `ports:` publicados para ellos).
+  Internet (no publican `ports:` al host, solo son alcanzables por la red interna).
 - **CORS explícito**, nunca `*` — solo el/los orígenes configurados en `CORS_ALLOWED_ORIGINS`
   pueden hacer requests cross-origin, y solo con métodos `GET`/`POST`/`PATCH`/`OPTIONS` y headers
   `Authorization`/`Content-Type`.
@@ -328,12 +326,11 @@ mvn test jacoco:report   # target/site/jacoco/index.html
 
 ## 15. Despliegue
 
-- **Docker**: `Dockerfile` multi-stage (Maven → JRE Alpine).
-- **Docker Compose**: servicio `api-gateway` en [`docker-compose.yml`](../docker-compose.yml) (dev)
-  y en [`deploy/docker-compose.prod.yml`](../deploy/docker-compose.prod.yml) (producción, único
-  servicio backend con puerto expuesto además de Game Service para el WebSocket).
-- **AWS**: en producción, el proxy `nginx` de borde reenvía `/api/**` hacia este servicio bajo el
-  mismo dominio HTTPS que el frontend — ver [`deploy/DEPLOY.md`](../deploy/DEPLOY.md).
+- **Docker**: `Dockerfile` multi-stage (Maven → JRE Alpine) incluido en este repositorio.
+- **Orquestación**: en un despliegue completo se levanta con Docker Compose junto a los demás
+  servicios.
+- **AWS**: en producción, un proxy `nginx` de borde reenvía `/api/**` hacia este servicio bajo el
+  mismo dominio HTTPS que el frontend.
 
 ---
 
@@ -370,15 +367,7 @@ mvn test jacoco:report   # target/site/jacoco/index.html
 
 ---
 
-## 19. Licencia
-
-MIT — ver [`LICENSE`](../LICENSE) en el repositorio raíz.
-
----
-
-## 20. Autor
+## 19. Autor
 
 **DUCU** — Desarrollador Full-Stack (individual), proyecto de la asignatura ARSW.
 Organización GitHub: [UNO-POWER](https://github.com/UNO-POWER).
-
-Repositorio raíz del sistema: **[UNO Power-Ups Arena](../README.md)**.
